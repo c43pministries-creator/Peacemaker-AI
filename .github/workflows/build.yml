@@ -9,17 +9,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
-        python-version: '3.9'
-    - name: Install dependencies
+        python-version: '3.10'
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v2
+    - name: Install Buildozer
       run: |
-        pip install buildozer
-        pip install requests
+        pip install --user buildozer
     - name: Build APK
       run: |
         buildozer init
         sed -i 's/^requirements =.*/requirements = python3,requests/' buildozer.spec
         buildozer android debug deploy run
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: peacemaker-app
+        path: bin/*.apk
